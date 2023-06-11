@@ -1,5 +1,5 @@
 from rest_framework import serializers 
-from deliver_app.models import Delivery, Dailycumulative, MonthlyCumulative
+from deliver_app.models import Delivery, Dailycumulative, Monthlycumulative
 
 # serializers here
 class DeliverySerializer(serializers.ModelSerializer):
@@ -14,5 +14,5 @@ class DailyCumulativeSerializer(serializers.ModelSerializer):
 
 class MonthlyCumulativeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = MonthlyCumulative
+        model = Monthlycumulative
         fields = ('__all__')
