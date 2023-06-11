@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from deliver_app.serializers import DeliverySerializer
-from deliver_app.models import Delivery as Deliver, Dailycumulative, MonthlyCumulative
+from deliver_app.models import Delivery as Deliver, Dailycumulative, Monthlycumulative
 from rest_framework.permissions import AllowAny,IsAuthenticated, IsAdminUser
 from rest_framework.decorators import permission_classes
 from rest_framework.views import APIView
@@ -22,8 +22,10 @@ class Delivery(APIView):
             amount = serializer.validated_data['amount']
             delivered_by = serializer.validated_data['delivered_by']
             delivery = serializer.save()
-            delivery.dailycumulative.amount = serializer.validated_data['amount']
+            delivery.dailycumulative.amount = 0.00
             delivery.dailycumulative.earned = 0.00
+            delivery.monthlycumulative.amount = 0.00
+            delivery.monthlycumulative.earned = 0.00
             delivery.save()
             delivery.refresh_from_db()
             msg = render_to_string('delivery-new.html', {
@@ -97,7 +99,7 @@ class MonthlyCumulatives(APIView):
     def get(self, request, format=None):
         today = dt.datetime.now()
         month_deliveries = Deliver.objects.all().filter(delivered__month=today.month)
-        month_cumulative = MonthlyCumulative.objects.all().last()
+        month_cumulative = Monthlycumulative.objects.all().last()
         month_cumulative.earned = month_deliveries.aggregate(TOTAL = Sum('earned'))['TOTAL']
         month_cumulative.amount = month_deliveries.aggregate(TOTAL = Sum('amount'))['TOTAL']
         month_cumulative.save()
