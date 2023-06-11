@@ -11,6 +11,8 @@ from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail 
 from django.contrib.auth.validators import UnicodeUsernameValidator 
 from django.core.validators import MaxValueValidator,MinValueValidator
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # Create your models here.
 class MyAccountManager(BaseUserManager):
@@ -205,8 +207,15 @@ class Delivery(models.Model):
         return self.delivered_by 
     
 class Dailycumulative(models.Model):
+    delivery = models.OneToOneField(Delivery, on_delete=models.CASCADE,blank=True,null=True)
     amount = models.DecimalField(max_digits=20,decimal_places=2,default=0.00,null=True,blank=True)
     earned = models.DecimalField(max_digits=20,decimal_places=2,default=0.00,null=True,blank=True)
+
+    @receiver(post_save, sender=MyUser)
+    def update_profile_signal(sender, instance, created, **kwargs):
+        if created:
+            Dailycumulative.objects.create(delivery=instance)
+        instance.dailycumulative.save()
 
 class MonthlyCumulative(models.Model):
     amount = models.DecimalField(max_digits=40,decimal_places=2,default=0.00,null=True,blank=True)
