@@ -75,7 +75,7 @@ class TodayReports(APIView):
         return Response(serializers.data)
     
 @permission_classes([AllowAny,])
-class Dailycumulatives(APIView):
+class DailyCumulatives(APIView):
     def get(self, request, format=None):
         today = dt.date.today()
         today_deliveries = Deliver.objects.all().filter(delivered=today).order_by('-delivered')

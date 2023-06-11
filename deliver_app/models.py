@@ -211,7 +211,7 @@ class Dailycumulative(models.Model):
     amount = models.DecimalField(max_digits=20,decimal_places=2,default=0.00,null=True,blank=True)
     earned = models.DecimalField(max_digits=20,decimal_places=2,default=0.00,null=True,blank=True)
 
-    @receiver(post_save, sender=MyUser)
+    @receiver(post_save, sender=Delivery)
     def update_profile_signal(sender, instance, created, **kwargs):
         if created:
             Dailycumulative.objects.create(delivery=instance)
