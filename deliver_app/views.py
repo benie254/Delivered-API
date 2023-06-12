@@ -13,7 +13,10 @@ import datetime as dt
 from django.db.models import F, ExpressionWrapper, DecimalField, PositiveIntegerField, Sum
 import sendgrid
 from sendgrid.helpers.mail import *
-from decouple import config 
+from deliver_app.utils import render_to_pdf 
+import os
+import pytz
+from django.utils import timezone
 
 # Create your views here.
 @permission_classes([AllowAny,])
@@ -42,35 +45,35 @@ class Delivery(APIView):
                 'mobile': mobile,
                 'location': location
             })
-            account_sid = config('ACCOUNT_SID')
-            auth_token = config('AUTH_TOKEN')
-            client = Client(account_sid, auth_token)
-            message = client.messages.create(
-                body=msg,
-                from_= config('TWILIO_FROM'),
-                to= config('TWILIO_TO')
-            )
+            # account_sid = os.environ["TWILIO_ACCOUNT_SID"]
+            # auth_token = os.environ["TWILIO_AUTH_TOKEN"]
+            # client = Client(account_sid, auth_token)
+            # message = client.messages.create(
+            #     body=msg,
+            #     from_= config('TWILIO_FROM'),
+            #     to= config('TWILIO_TO')
+            # )
+            # print(message.sid)
             status_code = status.HTTP_201_CREATED
             response = {
                 'success' : 'True',
                 'status code' : status_code,
                 'message': 'Message sent  successfully',
                 }
-            # print(message.sid)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 @permission_classes([AllowAny,])
 class AllReports(APIView):
     def get(self, request, format=None):
-        deliveries = Deliver.objects.all().order_by('-delivered')
+        deliveries = Deliver.objects.all().order_by('-time')
         serializers = DeliverySerializer(deliveries,many=True)
         return Response(serializers.data)
     
 @permission_classes([AllowAny,])
 class Reports(APIView):
     def get(self, request, format=None):
-        deliveries = Deliver.objects.all().order_by('-delivered')
+        deliveries = Deliver.objects.all().order_by('-time')
         serializers = DeliverySerializer(deliveries,many=True)
         last_delivery = Deliver.objects.all().last()
         last_delivery.earned = ExpressionWrapper(F('price_pl') * F('amount'),output_field=DecimalField)
@@ -81,8 +84,9 @@ class Reports(APIView):
 @permission_classes([AllowAny,])
 class TodayReports(APIView):
     def get(self, request, format=None):
-        today = dt.date.today()
-        deliveries = Deliver.objects.all().filter(delivered=today).order_by('-delivered')
+        today = timezone.now()
+        print(today)
+        deliveries = Deliver.objects.all().order_by('-time').filter(delivered=today)
         serializers = DeliverySerializer(deliveries,many=True)
         return Response(serializers.data)
     
@@ -96,7 +100,7 @@ class DeleteReport(APIView):
 class DailyCumulatives(APIView):
     def get(self, request, format=None):
         today = dt.date.today()
-        today_deliveries = Deliver.objects.all().filter(delivered=today).order_by('-delivered')
+        today_deliveries = Deliver.objects.all().filter(delivered=today)
         today_cumulative = Dailycumulative.objects.all().last()
         today_cumulative.earned = today_deliveries.aggregate(TOTAL = Sum('earned'))['TOTAL']
         today_cumulative.amount = today_deliveries.aggregate(TOTAL = Sum('amount'))['TOTAL']
@@ -143,7 +147,7 @@ class EmailDailyCumulative(APIView):
             report = serializer.save()
             report.refresh_from_db()
             sg = sendgrid.SendGridAPIClient(api_key=config('SENDGRID_API_KEY'))
-            msg = render_to_string('email/cumulative-daily.html', {
+            msg = render_to_string('pdf/cumulative-daily.html', {
                 'amount': amount,
                 'earned': earned,
                 'day': day,
@@ -170,7 +174,7 @@ class EmailDailyCumulative(APIView):
                 }
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
 class EmailMonthlyCumulative(APIView):
     def post(self, request):
         serializer = MonthlyCumulativeSerializer(data=request.data)
@@ -181,7 +185,7 @@ class EmailMonthlyCumulative(APIView):
             report = serializer.save()
             report.refresh_from_db()
             sg = sendgrid.SendGridAPIClient(api_key=config('SENDGRID_API_KEY'))
-            msg = render_to_string('email/cumulative-monthly.html', {
+            msg = render_to_string('pdf/cumulative-monthly.html', {
                 'amount': amount,
                 'earned': earned,
                 'month': month,

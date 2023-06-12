@@ -13,6 +13,7 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.validators import MaxValueValidator,MinValueValidator
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from deliver_proj import settings 
 
 # Create your models here.
 class MyAccountManager(BaseUserManager):
@@ -197,7 +198,8 @@ class Delivery(models.Model):
     amount = models.DecimalField(max_digits=7,decimal_places=2,default=0.00)
     price_pl = models.IntegerField(default=0)
     earned = models.DecimalField(max_digits=20,decimal_places=2,default=0.00,null=True,blank=True)
-    delivered = models.DateTimeField(default=timezone.now,null=True,blank=True)
+    delivered = models.DateField(default=dt.datetime.now,null=True,blank=True)
+    time = models.DateTimeField(auto_now_add=True,null=True,blank=True)
     delivered_by = models.CharField(max_length=1000,default='')
     received_from = models.CharField(max_length=1000,default='')
     mobile = models.BigIntegerField(validators=[MinValueValidator(100000000),MaxValueValidator(999999999999)],default=0)
