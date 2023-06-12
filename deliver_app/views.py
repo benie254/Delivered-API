@@ -102,8 +102,10 @@ class DailyCumulatives(APIView):
         today_cumulative.amount = today_deliveries.aggregate(TOTAL = Sum('amount'))['TOTAL']
         today_cumulative.save()
         today_cumulative.refresh_from_db()
-        serializers = DeliverySerializer(today_cumulative,many=False)
-        return Response(serializers.data)
+        if today_cumulative:
+            serializers = DeliverySerializer(today_cumulative,many=False)
+            return Response(serializers.data)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class DeleteDailyCumulative(APIView):
     def delete(self, request, id, format=None):
@@ -120,8 +122,10 @@ class MonthlyCumulatives(APIView):
         month_cumulative.amount = month_deliveries.aggregate(TOTAL = Sum('amount'))['TOTAL']
         month_cumulative.save()
         month_cumulative.refresh_from_db()
-        serializers = DeliverySerializer(month_cumulative,many=False)
-        return Response(serializers.data)
+        if month_cumulative:
+            serializers = DeliverySerializer(month_cumulative,many=False)
+            return Response(serializers.data)
+        return Response(status=status.HTTP_204_NO_CONTENT)
     
 class DeleteMonthlyCumulative(APIView):
     def delete(self, request, id, format=None):
