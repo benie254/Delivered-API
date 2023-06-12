@@ -86,6 +86,12 @@ class TodayReports(APIView):
         serializers = DeliverySerializer(deliveries,many=True)
         return Response(serializers.data)
     
+class DeleteReport(APIView):
+    def delete(self, request, id, format=None):
+        report = Deliver.objects.all().filter(pk=id).last()
+        report.delete()
+        return Response(status=status.HTTP_200_OK) 
+    
 @permission_classes([AllowAny,])
 class DailyCumulatives(APIView):
     def get(self, request, format=None):
@@ -98,12 +104,12 @@ class DailyCumulatives(APIView):
         today_cumulative.refresh_from_db()
         serializers = DeliverySerializer(today_cumulative,many=False)
         return Response(serializers.data)
-    
-    def post(self, request):
-        serializer = DeliverySerializer(data=request.data)
-        if serializer.is_valid():
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class DeleteDailyCumulative(APIView):
+    def delete(self, request, id, format=None):
+        report = Dailycumulative.objects.all().filter(pk=id).last()
+        report.delete()
+        return Response(status=status.HTTP_200_OK) 
     
 class MonthlyCumulatives(APIView):
     def get(self, request, format=None):
@@ -116,6 +122,12 @@ class MonthlyCumulatives(APIView):
         month_cumulative.refresh_from_db()
         serializers = DeliverySerializer(month_cumulative,many=False)
         return Response(serializers.data)
+    
+class DeleteMonthlyCumulative(APIView):
+    def delete(self, request, id, format=None):
+        report = Monthlycumulative.objects.all().filter(pk=id).last()
+        report.delete()
+        return Response(status=status.HTTP_200_OK) 
 
 class EmailDailyCumulative(APIView):
     def post(self, request):
