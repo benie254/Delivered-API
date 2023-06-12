@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from deliver_app.serializers import DeliverySerializer
+from deliver_app.serializers import DeliverySerializer, DailyCumulativeSerializer, MonthlyCumulativeSerializer
 from deliver_app.models import Delivery as Deliver, Dailycumulative, Monthlycumulative
 from rest_framework.permissions import AllowAny,IsAuthenticated, IsAdminUser
 from rest_framework.decorators import permission_classes
@@ -11,6 +11,9 @@ from django.template.loader import render_to_string
 from twilio.rest import Client 
 import datetime as dt
 from django.db.models import F, ExpressionWrapper, DecimalField, PositiveIntegerField, Sum
+import sendgrid
+from sendgrid.helpers.mail import *
+from decouple import config 
 
 # Create your views here.
 @permission_classes([AllowAny,])
@@ -21,6 +24,9 @@ class Delivery(APIView):
             price_pl = serializer.validated_data['price_pl']
             amount = serializer.validated_data['amount']
             delivered_by = serializer.validated_data['delivered_by']
+            received_from = serializer.validated_data['received_from']
+            mobile = serializer.validated_data['mobile']
+            location = serializer.validated_data['location']
             delivery = serializer.save()
             delivery.dailycumulative.amount = 0.00
             delivery.dailycumulative.earned = 0.00
@@ -29,17 +35,21 @@ class Delivery(APIView):
             delivery.save()
             delivery.refresh_from_db()
             msg = render_to_string('delivery-new.html', {
+                'price_pl': price_pl,
                 'amount': amount,
                 'delivered_by': delivered_by,
+                'received_from': received_from,
+                'mobile': mobile,
+                'location': location
             })
-            # account_sid = config('ACCOUNT_SID')
-            # auth_token = config('AUTH_TOKEN')
-            # client = Client(account_sid, auth_token)
-            # message = client.messages.create(
-            #     body=msg,
-            #     from_= config('TWILIO_FROM'),
-            #     to= config('TWILIO_TO')
-            # )
+            account_sid = config('ACCOUNT_SID')
+            auth_token = config('AUTH_TOKEN')
+            client = Client(account_sid, auth_token)
+            message = client.messages.create(
+                body=msg,
+                from_= config('TWILIO_FROM'),
+                to= config('TWILIO_TO')
+            )
             status_code = status.HTTP_201_CREATED
             response = {
                 'success' : 'True',
@@ -106,3 +116,79 @@ class MonthlyCumulatives(APIView):
         month_cumulative.refresh_from_db()
         serializers = DeliverySerializer(month_cumulative,many=False)
         return Response(serializers.data)
+
+class EmailDailyCumulative(APIView):
+    def post(self, request):
+        serializer = DailyCumulativeSerializer(data=request.data)
+        if serializer.is_valid():
+            amount = serializer.validated_data['amount']
+            earned = serializer.validated_data['earned']
+            day = serializer.validated_data['day']
+            report = serializer.save()
+            report.refresh_from_db()
+            sg = sendgrid.SendGridAPIClient(api_key=config('SENDGRID_API_KEY'))
+            msg = render_to_string('email/cumulative-daily.html', {
+                'amount': amount,
+                'earned': earned,
+                'day': day,
+            })
+            message = Mail(
+                from_email = Email("davinci.monalissa@gmail.com"),
+                to_emails = "davinci.monalissa@gmail.com",
+                subject = "Daily Cumulative Report",
+                html_content = msg
+            )
+            try:
+                sendgrid_client = sendgrid.SendGridAPIClient(config('SENDGRID_API_KEY'))
+                response = sendgrid_client.send(message)
+                print(response.status_code)
+                print(response.body)
+                print(response.headers)
+            except Exception as e:
+                print(e)
+            status_code = status.HTTP_201_CREATED
+            response = {
+                'success' : 'True',
+                'status code' : status_code,
+                'message': 'Daily cumulative report sent successfully',
+                }
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class EmailMonthlyCumulative(APIView):
+    def post(self, request):
+        serializer = MonthlyCumulativeSerializer(data=request.data)
+        if serializer.is_valid():
+            amount = serializer.validated_data['amount']
+            earned = serializer.validated_data['earned']
+            month = serializer.validated_data['month']
+            report = serializer.save()
+            report.refresh_from_db()
+            sg = sendgrid.SendGridAPIClient(api_key=config('SENDGRID_API_KEY'))
+            msg = render_to_string('email/cumulative-monthly.html', {
+                'amount': amount,
+                'earned': earned,
+                'month': month,
+            })
+            message = Mail(
+                from_email = Email("davinci.monalissa@gmail.com"),
+                to_emails = "davinci.monalissa@gmail.com",
+                subject = "Monthly Cumulative Report",
+                html_content = msg
+            )
+            try:
+                sendgrid_client = sendgrid.SendGridAPIClient(config('SENDGRID_API_KEY'))
+                response = sendgrid_client.send(message)
+                print(response.status_code)
+                print(response.body)
+                print(response.headers)
+            except Exception as e:
+                print(e)
+            status_code = status.HTTP_201_CREATED
+            response = {
+                'success' : 'True',
+                'status code' : status_code,
+                'message': 'Monthly cumulative report sent successfully',
+                }
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

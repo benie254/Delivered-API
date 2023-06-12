@@ -210,6 +210,7 @@ class Dailycumulative(models.Model):
     delivery = models.OneToOneField(Delivery, on_delete=models.CASCADE,blank=True,null=True)
     amount = models.DecimalField(max_digits=20,decimal_places=2,default=0.00,null=True,blank=True)
     earned = models.DecimalField(max_digits=20,decimal_places=2,default=0.00,null=True,blank=True)
+    day = models.CharField(max_length=1000,default='',null=True,blank=True)
 
     @receiver(post_save, sender=Delivery)
     def update_profile_signal(sender, instance, created, **kwargs):
@@ -221,6 +222,7 @@ class Monthlycumulative(models.Model):
     delivery = models.OneToOneField(Delivery, on_delete=models.CASCADE,blank=True,null=True)
     amount = models.DecimalField(max_digits=40,decimal_places=2,default=0.00,null=True,blank=True)
     earned = models.DecimalField(max_digits=40,decimal_places=2,default=0.00,null=True,blank=True)
+    month = models.CharField(max_length=1000,default='',null=True,blank=True)
 
     @receiver(post_save, sender=Delivery)
     def update_profile_signal(sender, instance, created, **kwargs):

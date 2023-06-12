@@ -58,25 +58,25 @@ class Register(APIView):
             receiver = serializer.validated_data['email']
             user = serializer.save()
             user.refresh_from_db()
-            sg = sendgrid.SendGridAPIClient(api_key=config('SENDGRID_API_KEY'))
-            msg = render_to_string('auth/user-welcome.html', {
-                'user': username,
-                'email': receiver,
-            })
-            message = Mail(
-                from_email = Email("davinci.monalissa@gmail.com"),
-                to_emails = receiver,
-                subject = "You're in!",
-                html_content = msg
-            )
-            try:
-                sendgrid_client = sendgrid.SendGridAPIClient(config('SENDGRID_API_KEY'))
-                response = sendgrid_client.send(message)
-                print(response.status_code)
-                print(response.body)
-                print(response.headers)
-            except Exception as e:
-                print(e)
+            # sg = sendgrid.SendGridAPIClient(api_key=config('SENDGRID_API_KEY'))
+            # msg = render_to_string('auth/user-welcome.html', {
+            #     'user': username,
+            #     'email': receiver,
+            # })
+            # message = Mail(
+            #     from_email = Email("davinci.monalissa@gmail.com"),
+            #     to_emails = receiver,
+            #     subject = "You're in!",
+            #     html_content = msg
+            # )
+            # try:
+            #     sendgrid_client = sendgrid.SendGridAPIClient(config('SENDGRID_API_KEY'))
+            #     response = sendgrid_client.send(message)
+            #     print(response.status_code)
+            #     print(response.body)
+            #     print(response.headers)
+            # except Exception as e:
+            #     print(e)
             status_code = status.HTTP_201_CREATED
             token = AuthToken.objects.create(user)
             response = {
@@ -216,7 +216,7 @@ def activate(request, uidb64, token):
                 'success':successMsg,
             }
             # return response 
-            return redirect('http://delivered.web.app/auth/confirmed/password/reset' + uid)
+            return redirect('http://deliver.web.app/auth/confirmed/password/reset' + uid)
         else:
             Http404
             print("failure")

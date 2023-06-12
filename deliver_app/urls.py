@@ -25,4 +25,6 @@ urlpatterns = [
     path('reports/today',views.TodayReports.as_view(),name='today-reports'),
     path('reports/cumulative/daily',views.DailyCumulatives.as_view(),name='daily-cumulatives'),
     path('reports/cumulative/monthly',views.MonthlyCumulatives.as_view(),name='monthly-cumulatives'),
+    path('reports/cumulative/email/daily',views.EmailDailyCumulative.as_view(),name='email-daily-cumulatives'),
+    path('reports/cumulative/email/monthly',views.EmailMonthlyCumulative.as_view(),name='email-monthly-cumulatives'),
 ]
