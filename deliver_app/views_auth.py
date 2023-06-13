@@ -216,7 +216,7 @@ def activate(request, uidb64, token):
                 'success':successMsg,
             }
             # return response 
-            return redirect('http://deliver.web.app/auth/confirmed/password/reset' + uid)
+            return redirect('http://deliver-ke.web.app/auth/confirmed/password/reset' + uid)
         else:
             Http404
             print("failure")
