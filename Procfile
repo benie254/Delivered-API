@@ -1,0 +1,1 @@
+web: gunicorn 'deliver_proj.wsgi'
