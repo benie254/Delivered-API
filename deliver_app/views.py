@@ -154,7 +154,7 @@ class EmailDailyCumulative(APIView):
             })
             message = Mail(
                 from_email = Email("davinci.monalissa@gmail.com"),
-                to_emails = "davinci.monalissa@gmail.com",
+                to_emails = "davinci.monalissa2@gmail.com",
                 subject = "Daily Cumulative Report",
                 html_content = msg
             )
@@ -192,7 +192,7 @@ class EmailMonthlyCumulative(APIView):
             })
             message = Mail(
                 from_email = Email("davinci.monalissa@gmail.com"),
-                to_emails = "davinci.monalissa@gmail.com",
+                to_emails = "davinci.monalissa2@gmail.com",
                 subject = "Monthly Cumulative Report",
                 html_content = msg
             )
