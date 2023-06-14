@@ -102,11 +102,11 @@ class DailyCumulatives(APIView):
         today = dt.date.today()
         today_deliveries = Deliver.objects.all().filter(delivered=today)
         today_cumulative = Dailycumulative.objects.all().last()
-        today_cumulative.earned = today_deliveries.aggregate(TOTAL = Sum('earned'))['TOTAL']
-        today_cumulative.amount = today_deliveries.aggregate(TOTAL = Sum('amount'))['TOTAL']
-        today_cumulative.save()
-        today_cumulative.refresh_from_db()
         if today_cumulative:
+            today_cumulative.earned = today_deliveries.aggregate(TOTAL = Sum('earned'))['TOTAL']
+            today_cumulative.amount = today_deliveries.aggregate(TOTAL = Sum('amount'))['TOTAL']
+            today_cumulative.save()
+            today_cumulative.refresh_from_db()
             serializers = DeliverySerializer(today_cumulative,many=False)
             return Response(serializers.data)
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -122,11 +122,11 @@ class MonthlyCumulatives(APIView):
         today = dt.datetime.now()
         month_deliveries = Deliver.objects.all().filter(delivered__month=today.month)
         month_cumulative = Monthlycumulative.objects.all().last()
-        month_cumulative.earned = month_deliveries.aggregate(TOTAL = Sum('earned'))['TOTAL']
-        month_cumulative.amount = month_deliveries.aggregate(TOTAL = Sum('amount'))['TOTAL']
-        month_cumulative.save()
-        month_cumulative.refresh_from_db()
         if month_cumulative:
+            month_cumulative.earned = month_deliveries.aggregate(TOTAL = Sum('earned'))['TOTAL']
+            month_cumulative.amount = month_deliveries.aggregate(TOTAL = Sum('amount'))['TOTAL']
+            month_cumulative.save()
+            month_cumulative.refresh_from_db()
             serializers = DeliverySerializer(month_cumulative,many=False)
             return Response(serializers.data)
         return Response(status=status.HTTP_204_NO_CONTENT)
