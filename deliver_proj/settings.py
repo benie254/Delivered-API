@@ -97,6 +97,7 @@ CORS_ORIGIN_WHITELIST = (
     'http://localhost:4200',
     'http://127.0.0.1:8000',
     'https://deliver-ke.web.app',
+    'https://delivered-api-production.up.railway.app',
 )
 
 MIDDLEWARE = [
