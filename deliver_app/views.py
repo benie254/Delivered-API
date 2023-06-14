@@ -45,15 +45,15 @@ class Delivery(APIView):
                 'mobile': mobile,
                 'location': location
             })
-            # account_sid = os.environ["TWILIO_ACCOUNT_SID"]
-            # auth_token = os.environ["TWILIO_AUTH_TOKEN"]
-            # client = Client(account_sid, auth_token)
-            # message = client.messages.create(
-            #     body=msg,
-            #     from_= config('TWILIO_FROM'),
-            #     to= config('TWILIO_TO')
-            # )
-            # print(message.sid)
+            account_sid = os.environ["TWILIO_ACCOUNT_SID"]
+            auth_token = os.environ["TWILIO_AUTH_TOKEN"]
+            client = Client(account_sid, auth_token)
+            message = client.messages.create(
+                body=msg,
+                from_= config('TWILIO_FROM'),
+                to= config('TWILIO_TO')
+            )
+            print(message.sid)
             status_code = status.HTTP_201_CREATED
             response = {
                 'success' : 'True',
