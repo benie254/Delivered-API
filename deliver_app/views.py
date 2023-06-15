@@ -63,7 +63,7 @@ class Delivery(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-@permission_classes([AllowAny,])
+@permission_classes([IsAuthenticated,])
 class AllReports(APIView):
     def get(self, request, format=None):
         deliveries = Deliver.objects.all().order_by('-time')
@@ -81,7 +81,7 @@ class Reports(APIView):
         last_delivery.refresh_from_db()
         return Response(serializers.data)
     
-@permission_classes([AllowAny,])
+@permission_classes([IsAuthenticated,])
 class TodayReports(APIView):
     def get(self, request, format=None):
         today = timezone.now()
@@ -89,7 +89,8 @@ class TodayReports(APIView):
         deliveries = Deliver.objects.all().order_by('-time').filter(delivered=today)
         serializers = DeliverySerializer(deliveries,many=True)
         return Response(serializers.data)
-    
+
+@permission_classes([IsAuthenticated,])
 class DeleteReport(APIView):
     def delete(self, request, id, format=None):
         report = Deliver.objects.all().filter(pk=id).last()
@@ -111,12 +112,14 @@ class DailyCumulatives(APIView):
             return Response(serializers.data)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+@permission_classes([IsAuthenticated,])
 class DeleteDailyCumulative(APIView):
     def delete(self, request, id, format=None):
         report = Dailycumulative.objects.all().filter(pk=id).last()
         report.delete()
         return Response(status=status.HTTP_200_OK) 
-    
+
+@permission_classes([IsAuthenticated,])
 class MonthlyCumulatives(APIView):
     def get(self, request, format=None):
         today = dt.datetime.now()
@@ -130,13 +133,15 @@ class MonthlyCumulatives(APIView):
             serializers = DeliverySerializer(month_cumulative,many=False)
             return Response(serializers.data)
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
+
+@permission_classes([IsAuthenticated,])
 class DeleteMonthlyCumulative(APIView):
     def delete(self, request, id, format=None):
         report = Monthlycumulative.objects.all().filter(pk=id).last()
         report.delete()
         return Response(status=status.HTTP_200_OK) 
 
+@permission_classes([IsAuthenticated,])
 class EmailDailyCumulative(APIView):
     def post(self, request):
         serializer = DailyCumulativeSerializer(data=request.data)
@@ -147,7 +152,7 @@ class EmailDailyCumulative(APIView):
             report = serializer.save()
             report.refresh_from_db()
             sg = sendgrid.SendGridAPIClient(api_key=config('SENDGRID_API_KEY'))
-            msg = render_to_string('pdf/cumulative-daily.html', {
+            msg = render_to_string('email/cumulative-daily.html', {
                 'amount': amount,
                 'earned': earned,
                 'day': day,
@@ -175,6 +180,7 @@ class EmailDailyCumulative(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@permission_classes([IsAuthenticated,])
 class EmailMonthlyCumulative(APIView):
     def post(self, request):
         serializer = MonthlyCumulativeSerializer(data=request.data)
@@ -185,7 +191,7 @@ class EmailMonthlyCumulative(APIView):
             report = serializer.save()
             report.refresh_from_db()
             sg = sendgrid.SendGridAPIClient(api_key=config('SENDGRID_API_KEY'))
-            msg = render_to_string('pdf/cumulative-monthly.html', {
+            msg = render_to_string('email/cumulative-monthly.html', {
                 'amount': amount,
                 'earned': earned,
                 'month': month,
