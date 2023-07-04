@@ -11,9 +11,8 @@ This project contains development of the application's back-end. Key features in
 
 ## Live Page: [Delivered-API](https://delivered-api-production.up.railway.app/)
 ### Direct links
-[Delivered](https://delivered-api-production.up.railway.app/openapi/)
-
-[Docs](https://delivered-api-production.up.railway.app/docs/)
+* [Delivered](https://delivered-api-production.up.railway.app/openapi/)
+* [Docs](https://delivered-api-production.up.railway.app/docs/)
 
 ## Technologies Used
 
