@@ -20,6 +20,8 @@ This project contains development of the application's back-end. Key features in
 * [Python](https://www.python.org/) ([Django](https://www.djangoproject.com/))- database, authentication, API, email service.
 * CSS & [Bootstrap](https://getbootstrap.com/)- API documentation styling.
 * [Railway](https://railway.app/)- deployment & hosting
+* [Swagger UI](https://swagger.io/)- API documentation.
+
 #### Packages
 * [Django Cors Headers](https://pypi.org/project/django-cors-headers/)- CORS origin configurations.
 * [Django Registration](https://django-registration.readthedocs.io/)- authentication logic.
