@@ -27,7 +27,7 @@ This project contains development of the application's back-end. Key features in
 * [Sendgrid](http://sendgrid.com/)- email service API.
 * [Twilio](https://www.twilio.com/)- SMS service API.
 ### Front-end development
-[Click here for Back-end logic](https://github.com/benie254/Delivered)
+* [Click here for Back-end logic](https://github.com/benie254/Delivered)
 
 ## Known Bugs
 
