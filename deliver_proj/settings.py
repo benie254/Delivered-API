@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     'knox',
     'corsheaders',
     'bootstrap5',
+    'drf_yasg',
 ]
 
 REST_FRAMEWORK = {

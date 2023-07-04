@@ -56,7 +56,7 @@ class PasswordResetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User 
-        fields = ('password','password')
+        fields = ('password','password2')
 
     def validate(self,attrs):
         if attrs['password'] != attrs['password2']:

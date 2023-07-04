@@ -17,10 +17,16 @@ from deliver_app.utils import render_to_pdf
 import os
 import pytz
 from django.utils import timezone
+from drf_yasg.utils import swagger_auto_schema
 
 # Create your views here.
+def landing(request):
+    title = 'welcome'
+    return render(request,'landing.html',{"title":title,})
+
 @permission_classes([AllowAny,])
 class Delivery(APIView):
+    @swagger_auto_schema(request_body=DeliverySerializer)
     def post(self, request):
         serializer = DeliverySerializer(data=request.data)
         if serializer.is_valid():
@@ -143,6 +149,7 @@ class DeleteMonthlyCumulative(APIView):
 
 @permission_classes([IsAuthenticated,])
 class EmailDailyCumulative(APIView):
+    @swagger_auto_schema(request_body=DailyCumulativeSerializer)
     def post(self, request):
         serializer = DailyCumulativeSerializer(data=request.data)
         if serializer.is_valid():
@@ -182,6 +189,7 @@ class EmailDailyCumulative(APIView):
 
 @permission_classes([IsAuthenticated,])
 class EmailMonthlyCumulative(APIView):
+    @swagger_auto_schema(request_body=MonthlyCumulativeSerializer)
     def post(self, request):
         serializer = MonthlyCumulativeSerializer(data=request.data)
         if serializer.is_valid():
