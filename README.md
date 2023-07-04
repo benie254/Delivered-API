@@ -10,8 +10,8 @@ Back-end logic for a milk delivery system
 This project contains development of the application's back-end. Key features include database & API development, custom authentication, integration with an email service, and an SMS service. It handles all requests made from the application's [front-end](https://github.com/benie254/Delivered).
 
 ## Live Page: [Delivered-API](https://delivered-api-production.up.railway.app/)
-### Direct links
-* [Delivered](https://delivered-api-production.up.railway.app/openapi/)
+### Quick links
+* [API](https://delivered-api-production.up.railway.app/openapi/)
 * [Docs](https://delivered-api-production.up.railway.app/docs/)
 
 ## Technologies Used
