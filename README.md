@@ -1,7 +1,7 @@
 # Delivered-API
 Back-end logic for a milk delivery system
 
-# MyPortfolio-API
+# Delivered-API
 #### API development for a milk delivery system, generated with [Django](https://www.djangoproject.com/) version 4.2.2
 ## Author
 [Benson Langat](https://github.com/benie254)
